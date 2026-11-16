@@ -1,9 +1,27 @@
-"""ChatGPT Codex backend endpoint formulas."""
+"""ChatGPT Codex backend endpoint formulas.
+
+``CHATGPT_TARGET_API_URL`` points Codex's ChatGPT-subscription traffic at another backend, such as a gateway that
+passes it on to chatgpt.com (like ``OPENAI_TARGET_API_URL`` does for API-key traffic). Its ``/backend-api/...``
+paths are kept, and the WebSocket URL follows the same host (``https`` → ``wss``, ``http`` → ``ws``).
+"""
 
 from __future__ import annotations
 
-CHATGPT_BACKEND_API_URL = "https://chatgpt.com"
-CHATGPT_BACKEND_WS_URL = "wss://chatgpt.com"
+import os
+
+
+def _ws(base: str) -> str:
+    if base.startswith("https://"):
+        return "wss://" + base[len("https://") :]
+    if base.startswith("http://"):
+        return "ws://" + base[len("http://") :]
+    return base
+
+
+CHATGPT_BACKEND_API_URL = (
+    (os.environ.get("CHATGPT_TARGET_API_URL") or "https://chatgpt.com").strip().rstrip("/")
+)
+CHATGPT_BACKEND_WS_URL = _ws(CHATGPT_BACKEND_API_URL)
 CODEX_BACKEND_PREFIX = "/backend-api/codex"
 
 
