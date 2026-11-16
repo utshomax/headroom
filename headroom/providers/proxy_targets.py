@@ -11,8 +11,8 @@ from headroom.copilot_auth import (
     is_copilot_completions_host,
     is_copilot_completions_path,
 )
+from headroom.providers.codex import endpoints as codex_endpoints
 from headroom.providers.codex import resolve_codex_routing
-from headroom.providers.codex.endpoints import CHATGPT_BACKEND_API_URL
 from headroom.providers.codex.runtime import DEFAULT_API_URL as DEFAULT_OPENAI_API_URL
 from headroom.providers.grok.runtime import DEFAULT_API_URL as XAI_API_URL
 from headroom.providers.grok.runtime import is_grok_cli_request
@@ -100,7 +100,7 @@ def select_passthrough_base_url(
     """Resolve the upstream base URL for catch-all proxy passthrough requests."""
     routing = resolve_codex_routing(headers)
     if routing.is_chatgpt_auth:
-        return CHATGPT_BACKEND_API_URL
+        return codex_endpoints.CHATGPT_BACKEND_API_URL
     if headers.get("x-goog-api-key"):
         return api_target(proxy, "gemini")
     if headers.get("api-key"):
